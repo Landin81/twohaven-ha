@@ -1,0 +1,256 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "TwoHaven",
+        "description": "Skapa en API-nyckel i TwoHaven-appen under Mer → Home Assistant och klistra in den här.",
+        "data": {
+          "api_key": "API-nyckel",
+          "url": "Serveradress"
+        }
+      },
+      "reauth_confirm": {
+        "title": "TwoHaven",
+        "description": "API-nyckeln fungerar inte längre. Skapa en ny i TwoHaven-appen under Mer → Home Assistant.",
+        "data": {
+          "api_key": "API-nyckel"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "API-nyckeln är fel eller borttagen.",
+      "cannot_connect": "Kunde inte nå TwoHaven."
+    },
+    "abort": {
+      "already_configured": "Den här familjen är redan tillagd.",
+      "reauth_successful": "Nyckeln är uppdaterad."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "remaining_today": {
+        "name": "Skärmtid kvar idag"
+      },
+      "used_today": {
+        "name": "Skärmtid idag"
+      },
+      "bonus_today": {
+        "name": "Bonus idag"
+      },
+      "pending_chores": {
+        "name": "Sysslor att kolla"
+      },
+      "current_app": {
+        "name": "Aktiv app"
+      }
+    },
+    "binary_sensor": {
+      "locked": {
+        "name": "Låst"
+      },
+      "online": {
+        "name": "Online"
+      }
+    },
+    "switch": {
+      "lock": {
+        "name": "Lås enheterna"
+      },
+      "internet": {
+        "name": "Internet"
+      }
+    },
+    "button": {
+      "bonus_15": {
+        "name": "Bonus +15 min"
+      },
+      "ring": {
+        "name": "Spela ljud"
+      }
+    }
+  },
+  "services": {
+    "give_bonus": {
+      "name": "Ge bonustid",
+      "description": "Ger (eller tar bort, med minus) skärmtid idag.",
+      "fields": {
+        "child": {
+          "name": "Barn",
+          "description": "Barnets namn (t.ex. sam) eller id."
+        },
+        "minutes": {
+          "name": "Minuter",
+          "description": "Minuter att ge, −120 till 120."
+        },
+        "reason": {
+          "name": "Anledning",
+          "description": "Visas i loggen, t.ex. Bäddat sängen."
+        },
+        "once": {
+          "name": "Bara en gång per dag",
+          "description": "Ger bonusen bara en gång per dag för samma anledning."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven-familj",
+          "description": "Behövs bara om du lagt till fler än en familj."
+        }
+      }
+    },
+    "chore": {
+      "name": "Syssla med kontroll",
+      "description": "Barnet kryssar i en syssla och får tiden direkt. Föräldrarna får frågan om det stämmer – om inte tas tiden tillbaka och straffet dras. Returnerar chore_id.",
+      "fields": {
+        "child": {
+          "name": "Barn",
+          "description": "Barnets namn (t.ex. sam) eller id."
+        },
+        "name": {
+          "name": "Syssla",
+          "description": "T.ex. Bäddat sängen."
+        },
+        "minutes": {
+          "name": "Minuter",
+          "description": "Minuter som barnet får."
+        },
+        "penalty_factor": {
+          "name": "Straffaktor",
+          "description": "Vid fusk: tiden tas tillbaka och minuter × faktor dras. 2 = dubbelt."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven-familj",
+          "description": "Behövs bara om du lagt till fler än en familj."
+        }
+      }
+    },
+    "approve_chore": {
+      "name": "Godkänn syssla",
+      "description": "Sysslan var gjord – tiden står kvar.",
+      "fields": {
+        "chore_id": {
+          "name": "Syssla-id",
+          "description": "Från svaret på åtgärden Syssla eller händelsen twohaven_chore_claimed."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven-familj",
+          "description": "Behövs bara om du lagt till fler än en familj."
+        }
+      }
+    },
+    "reject_chore": {
+      "name": "Neka syssla (fusk)",
+      "description": "Sysslan var inte gjord – tiden tas tillbaka och straffet dras.",
+      "fields": {
+        "chore_id": {
+          "name": "Syssla-id",
+          "description": "Från svaret på åtgärden Syssla eller händelsen twohaven_chore_claimed."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven-familj",
+          "description": "Behövs bara om du lagt till fler än en familj."
+        }
+      }
+    },
+    "lock": {
+      "name": "Lås",
+      "description": "Låser barnets enheter.",
+      "fields": {
+        "child": {
+          "name": "Barn",
+          "description": "Barnets namn (t.ex. sam) eller id."
+        },
+        "minutes": {
+          "name": "Minuter",
+          "description": "0 = tills vidare."
+        },
+        "device": {
+          "name": "Enhet",
+          "description": "Bara den här enheten (namn). Lämna tomt för alla barnets enheter."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven-familj",
+          "description": "Behövs bara om du lagt till fler än en familj."
+        }
+      }
+    },
+    "unlock": {
+      "name": "Lås upp",
+      "description": "Tar bort det manuella låset (schema och skärmtid gäller fortfarande).",
+      "fields": {
+        "child": {
+          "name": "Barn",
+          "description": "Barnets namn (t.ex. sam) eller id."
+        },
+        "device": {
+          "name": "Enhet",
+          "description": "Bara den här enheten (namn). Lämna tomt för alla barnets enheter."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven-familj",
+          "description": "Behövs bara om du lagt till fler än en familj."
+        }
+      }
+    },
+    "open": {
+      "name": "Öppna tillfälligt",
+      "description": "Går före schema och skärmtid en stund.",
+      "fields": {
+        "child": {
+          "name": "Barn",
+          "description": "Barnets namn (t.ex. sam) eller id."
+        },
+        "minutes": {
+          "name": "Minuter",
+          "description": "0 = avsluta den tillfälliga öppningen."
+        },
+        "device": {
+          "name": "Enhet",
+          "description": "Bara den här enheten (namn). Lämna tomt för alla barnets enheter."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven-familj",
+          "description": "Behövs bara om du lagt till fler än en familj."
+        }
+      }
+    },
+    "internet": {
+      "name": "Internet av/på",
+      "description": "Stänger av eller slår på internet för barnet.",
+      "fields": {
+        "child": {
+          "name": "Barn",
+          "description": "Barnets namn (t.ex. sam) eller id."
+        },
+        "off": {
+          "name": "Stäng av",
+          "description": "På = internet av."
+        },
+        "device": {
+          "name": "Enhet",
+          "description": "Bara den här enheten (namn). Lämna tomt för alla barnets enheter."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven-familj",
+          "description": "Behövs bara om du lagt till fler än en familj."
+        }
+      }
+    },
+    "ring": {
+      "name": "Spela ljud",
+      "description": "Spelar ett ljud på barnets enheter.",
+      "fields": {
+        "child": {
+          "name": "Barn",
+          "description": "Barnets namn (t.ex. sam) eller id."
+        },
+        "device": {
+          "name": "Enhet",
+          "description": "Bara den här enheten (namn). Lämna tomt för alla barnets enheter."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven-familj",
+          "description": "Behövs bara om du lagt till fler än en familj."
+        }
+      }
+    }
+  }
+}

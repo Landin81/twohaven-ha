@@ -1,0 +1,79 @@
+give_bonus:
+  fields:
+    child: &child
+      required: true
+      example: sam
+      selector: { text: {} }
+    minutes:
+      required: true
+      default: 10
+      selector: { number: { min: -120, max: 120, step: 5, unit_of_measurement: min, mode: box } }
+    reason:
+      example: Bäddat sängen
+      selector: { text: {} }
+    once:
+      default: false
+      selector: { boolean: {} }
+    config_entry_id: &entry
+      selector: { config_entry: { integration: twohaven } }
+chore:
+  fields:
+    child: *child
+    name:
+      required: true
+      example: Bäddat sängen
+      selector: { text: {} }
+    minutes:
+      required: true
+      default: 10
+      selector: { number: { min: 1, max: 120, step: 5, unit_of_measurement: min, mode: box } }
+    penalty_factor:
+      default: 2
+      selector: { number: { min: 0, max: 5, step: 0.5, mode: box } }
+    config_entry_id: *entry
+approve_chore:
+  fields:
+    chore_id: &chore
+      required: true
+      selector: { number: { min: 1, max: 100000000, mode: box } }
+    config_entry_id: *entry
+reject_chore:
+  fields:
+    chore_id: *chore
+    config_entry_id: *entry
+lock:
+  fields:
+    child: *child
+    minutes:
+      default: 0
+      selector: { number: { min: 0, max: 1440, step: 5, unit_of_measurement: min, mode: box } }
+    device: &device
+      selector: { text: {} }
+    config_entry_id: *entry
+unlock:
+  fields:
+    child: *child
+    device: *device
+    config_entry_id: *entry
+open:
+  fields:
+    child: *child
+    minutes:
+      required: true
+      default: 30
+      selector: { number: { min: 0, max: 240, step: 5, unit_of_measurement: min, mode: box } }
+    device: *device
+    config_entry_id: *entry
+internet:
+  fields:
+    child: *child
+    "off":
+      required: true
+      selector: { boolean: {} }
+    device: *device
+    config_entry_id: *entry
+ring:
+  fields:
+    child: *child
+    device: *device
+    config_entry_id: *entry

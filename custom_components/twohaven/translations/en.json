@@ -1,0 +1,256 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "TwoHaven",
+        "description": "Create an API key in the TwoHaven app under More → Home Assistant and paste it here.",
+        "data": {
+          "api_key": "API key",
+          "url": "Server address"
+        }
+      },
+      "reauth_confirm": {
+        "title": "TwoHaven",
+        "description": "The API key no longer works. Create a new one in the TwoHaven app under More → Home Assistant.",
+        "data": {
+          "api_key": "API key"
+        }
+      }
+    },
+    "error": {
+      "invalid_auth": "The API key is wrong or has been deleted.",
+      "cannot_connect": "Could not reach TwoHaven."
+    },
+    "abort": {
+      "already_configured": "This family is already added.",
+      "reauth_successful": "The key has been updated."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "remaining_today": {
+        "name": "Screen time left today"
+      },
+      "used_today": {
+        "name": "Screen time used today"
+      },
+      "bonus_today": {
+        "name": "Bonus today"
+      },
+      "pending_chores": {
+        "name": "Chores to check"
+      },
+      "current_app": {
+        "name": "Current app"
+      }
+    },
+    "binary_sensor": {
+      "locked": {
+        "name": "Locked"
+      },
+      "online": {
+        "name": "Online"
+      }
+    },
+    "switch": {
+      "lock": {
+        "name": "Lock devices"
+      },
+      "internet": {
+        "name": "Internet"
+      }
+    },
+    "button": {
+      "bonus_15": {
+        "name": "Bonus +15 min"
+      },
+      "ring": {
+        "name": "Play sound"
+      }
+    }
+  },
+  "services": {
+    "give_bonus": {
+      "name": "Give bonus time",
+      "description": "Gives (or removes, with a negative number) screen time today.",
+      "fields": {
+        "child": {
+          "name": "Child",
+          "description": "The child's name (e.g. sam) or id."
+        },
+        "minutes": {
+          "name": "Minutes",
+          "description": "Minutes to give, −120 to 120."
+        },
+        "reason": {
+          "name": "Reason",
+          "description": "Shown in the log, e.g. Made the bed."
+        },
+        "once": {
+          "name": "Only once per day",
+          "description": "Gives the bonus only once per day for the same reason."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven family",
+          "description": "Only needed if you have added more than one family."
+        }
+      }
+    },
+    "chore": {
+      "name": "Chore with check",
+      "description": "The child claims a chore and gets the time right away. Parents are asked whether it is true; if not, the time is taken back and the penalty deducted. Returns chore_id.",
+      "fields": {
+        "child": {
+          "name": "Child",
+          "description": "The child's name (e.g. sam) or id."
+        },
+        "name": {
+          "name": "Chore",
+          "description": "E.g. Made the bed."
+        },
+        "minutes": {
+          "name": "Minutes",
+          "description": "Minutes the child gets."
+        },
+        "penalty_factor": {
+          "name": "Penalty factor",
+          "description": "If it was cheating: the time is taken back and minutes × factor is deducted. 2 = double."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven family",
+          "description": "Only needed if you have added more than one family."
+        }
+      }
+    },
+    "approve_chore": {
+      "name": "Approve chore",
+      "description": "The chore was done – the time stays.",
+      "fields": {
+        "chore_id": {
+          "name": "Chore id",
+          "description": "From the chore action's response or the twohaven_chore_claimed event."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven family",
+          "description": "Only needed if you have added more than one family."
+        }
+      }
+    },
+    "reject_chore": {
+      "name": "Reject chore (cheating)",
+      "description": "The chore was not done – the time is taken back and the penalty deducted.",
+      "fields": {
+        "chore_id": {
+          "name": "Chore id",
+          "description": "From the chore action's response or the twohaven_chore_claimed event."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven family",
+          "description": "Only needed if you have added more than one family."
+        }
+      }
+    },
+    "lock": {
+      "name": "Lock",
+      "description": "Locks the child's devices.",
+      "fields": {
+        "child": {
+          "name": "Child",
+          "description": "The child's name (e.g. sam) or id."
+        },
+        "minutes": {
+          "name": "Minutes",
+          "description": "0 = until further notice."
+        },
+        "device": {
+          "name": "Device",
+          "description": "Only this device (name). Leave empty for all of the child's devices."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven family",
+          "description": "Only needed if you have added more than one family."
+        }
+      }
+    },
+    "unlock": {
+      "name": "Unlock",
+      "description": "Removes the manual lock (schedule and screen time still apply).",
+      "fields": {
+        "child": {
+          "name": "Child",
+          "description": "The child's name (e.g. sam) or id."
+        },
+        "device": {
+          "name": "Device",
+          "description": "Only this device (name). Leave empty for all of the child's devices."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven family",
+          "description": "Only needed if you have added more than one family."
+        }
+      }
+    },
+    "open": {
+      "name": "Open temporarily",
+      "description": "Overrides schedule and screen time for a while.",
+      "fields": {
+        "child": {
+          "name": "Child",
+          "description": "The child's name (e.g. sam) or id."
+        },
+        "minutes": {
+          "name": "Minutes",
+          "description": "0 = end the temporary opening."
+        },
+        "device": {
+          "name": "Device",
+          "description": "Only this device (name). Leave empty for all of the child's devices."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven family",
+          "description": "Only needed if you have added more than one family."
+        }
+      }
+    },
+    "internet": {
+      "name": "Internet on/off",
+      "description": "Turns the internet off or on for the child.",
+      "fields": {
+        "child": {
+          "name": "Child",
+          "description": "The child's name (e.g. sam) or id."
+        },
+        "off": {
+          "name": "Turn off",
+          "description": "On = internet off."
+        },
+        "device": {
+          "name": "Device",
+          "description": "Only this device (name). Leave empty for all of the child's devices."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven family",
+          "description": "Only needed if you have added more than one family."
+        }
+      }
+    },
+    "ring": {
+      "name": "Play sound",
+      "description": "Plays a sound on the child's devices.",
+      "fields": {
+        "child": {
+          "name": "Child",
+          "description": "The child's name (e.g. sam) or id."
+        },
+        "device": {
+          "name": "Device",
+          "description": "Only this device (name). Leave empty for all of the child's devices."
+        },
+        "config_entry_id": {
+          "name": "TwoHaven family",
+          "description": "Only needed if you have added more than one family."
+        }
+      }
+    }
+  }
+}

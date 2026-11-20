@@ -1,0 +1,105 @@
+blueprint:
+  name: TwoHaven – syssla med kontroll
+  description: >-
+    Barnet kryssar i en syssla (t.ex. "Bäddat sängen") och får extra skärmtid direkt.
+    Du får en notis i mobilen: 👍 Stämmer eller 👎 Fusk. Vid fusk tas tiden tillbaka
+    och straffet dras (standard dubbla tiden). Kryssrutan bockas ur vid midnatt.
+    Svarar du inte inom tiden står tiden kvar. Du kan också svara på Översikt i TwoHaven-appen.
+  domain: automation
+  source_url: https://github.com/Landin81/twohaven-ha/blob/main/blueprints/automation/twohaven/chore_check.yaml
+  input:
+    checkbox:
+      name: Kryssruta
+      description: En hjälpare av typen Växel (input_boolean), t.ex. "Sam – bäddat sängen".
+      selector: { entity: { domain: input_boolean } }
+    child:
+      name: Barn
+      description: Barnets namn som i TwoHaven, t.ex. sam.
+      selector: { text: {} }
+    chore:
+      name: Syssla
+      default: Bäddat sängen
+      selector: { text: {} }
+    minutes:
+      name: Minuter
+      default: 10
+      selector: { number: { min: 1, max: 120, step: 5, unit_of_measurement: min } }
+    penalty_factor:
+      name: Straff vid fusk
+      description: Tiden tas tillbaka och minuter × faktor dras. 2 = dubbla tiden, 0 = bara tillbaka.
+      default: 2
+      selector: { number: { min: 0, max: 5, step: 0.5 } }
+    notify_device:
+      name: Förälderns mobil
+      description: Mobilen som ska få frågan (Home Assistant-appen).
+      selector: { device: { integration: mobile_app } }
+    answer_hours:
+      name: Svarstid
+      description: Timmar att svara innan tiden räknas som godkänd.
+      default: 3
+      selector: { number: { min: 1, max: 24, unit_of_measurement: h } }
+
+mode: parallel
+max: 20
+
+triggers:
+  - trigger: state
+    entity_id: !input checkbox
+    from: "off"
+    to: "on"
+    id: claimed
+  - trigger: time
+    at: "00:00:00"
+    id: midnight
+
+actions:
+  - choose:
+      - conditions: [{ condition: trigger, id: midnight }]
+        sequence:
+          - action: input_boolean.turn_off
+            target: { entity_id: !input checkbox }
+    default:
+      - variables:
+          child: !input child
+          chore: !input chore
+          minutes: !input minutes
+          penalty_factor: !input penalty_factor
+          answer_hours: !input answer_hours
+      - action: twohaven.chore
+        data:
+          child: "{{ child }}"
+          name: "{{ chore }}"
+          minutes: "{{ minutes }}"
+          penalty_factor: "{{ penalty_factor }}"
+        response_variable: res
+      - condition: template
+        value_template: "{{ not res.alreadyClaimed }}"
+      - variables:
+          cid: "{{ res.chore.id }}"
+          ok_action: "TWOHAVEN_OK_{{ res.chore.id }}"
+          no_action: "TWOHAVEN_NO_{{ res.chore.id }}"
+      - domain: mobile_app
+        type: notify
+        device_id: !input notify_device
+        title: "🧹 {{ child | capitalize }}: {{ chore }}"
+        message: "+{{ minutes }} min har getts. Stämmer det?"
+        data:
+          tag: "{{ ok_action }}"
+          actions:
+            - action: "{{ ok_action }}"
+              title: "👍 Stämmer"
+            - action: "{{ no_action }}"
+              title: "👎 Fusk (−{{ (minutes * (1 + penalty_factor)) | int }} min)"
+      - wait_for_trigger:
+          - trigger: event
+            event_type: mobile_app_notification_action
+            event_data: { action: "{{ ok_action }}" }
+          - trigger: event
+            event_type: mobile_app_notification_action
+            event_data: { action: "{{ no_action }}" }
+        timeout: "{{ (answer_hours | float * 3600) | int }}"
+        continue_on_timeout: false
+      - action: >-
+          {{ 'twohaven.approve_chore' if wait.trigger.event.data.action == ok_action else 'twohaven.reject_chore' }}
+        data:
+          chore_id: "{{ cid }}"
