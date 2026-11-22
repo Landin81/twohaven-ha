@@ -1,0 +1,17 @@
+name: TwoHaven Nätverkslåda
+version: "0.1.0"
+slug: twohaven_netbox
+description: Stänger av internet för Xbox och PlayStation när barnets skärmtid i TwoHaven är slut.
+url: https://github.com/Landin81/twohaven-ha#n%C3%A4tverksl%C3%A5dan
+arch: [aarch64, amd64, armv7]
+init: false
+startup: application
+boot: auto
+host_network: true
+privileged: [NET_RAW, NET_ADMIN]
+options:
+  api_key: ""
+  interface: ""
+schema:
+  api_key: password
+  interface: str?

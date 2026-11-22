@@ -49,6 +49,15 @@ Slår av internet för konsolen via din router när tiden är slut, utanför sch
 
 [![Importera blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FLandin81%2Ftwohaven-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftwohaven%2Fconsole_internet.yaml)
 
+## Nätverkslådan
+
+Stänger av internet för Xbox och PlayStation när barnets skärmtid är slut – utan att routern behöver något särskilt stöd.
+Lägg till tilläggsarkivet i Home Assistant och installera **TwoHaven Nätverkslåda**:
+
+[![Lägg till tilläggsarkivet](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2FLandin81%2Ftwohaven-ha)
+
+Klistra in en nyckel från TwoHaven-appen (Mer → Home Assistant) och starta tillägget. Koppla sedan konsolen till barnet under **Mer → Familj-funktioner → Spelkonsoler** i appen.
+
 ## Åtgärder (för egna automationer)
 
 | Åtgärd | Exempel |
