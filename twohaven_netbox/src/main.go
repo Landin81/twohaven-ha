@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-const version = "0.1.0"
+const version = "0.1.1"
 
 var fakeMAC = net.HardwareAddr{0x02, 0x74, 0x68, 0x00, 0x00, 0x01} // finns inte i nätet → trafiken försvinner
 
@@ -285,6 +285,14 @@ func (s *state) report(base, key string) int {
 	_ = json.NewDecoder(res.Body).Decode(&out)
 	if res.StatusCode != 200 {
 		log.Printf("servern: %d %s", res.StatusCode, out.Error)
+		// Nyckeln gäller inte längre (borttagen eller inget Familj-abonnemang): släpp alla konsoler
+		if res.StatusCode == 401 || res.StatusCode == 402 || res.StatusCode == 403 {
+			s.mu.Lock()
+			for m := range s.blocked {
+				s.blocked[m] = false
+			}
+			s.mu.Unlock()
+		}
 		return 60
 	}
 	s.mu.Lock()

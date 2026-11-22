@@ -1,5 +1,5 @@
 name: TwoHaven Nätverkslåda
-version: "0.1.0"
+version: "0.1.1"
 slug: twohaven_netbox
 description: Stänger av internet för Xbox och PlayStation när barnets skärmtid i TwoHaven är slut.
 url: https://github.com/Landin81/twohaven-ha#n%C3%A4tverksl%C3%A5dan
