@@ -67,5 +67,8 @@ class TwoHavenApi:
     async def chore(self, child: str, name: str, minutes: int, penalty_factor: float = 2) -> dict[str, Any]:
         return await self._req("POST", f"/children/{child}/chores", {"name": name, "minutes": minutes, "penaltyFactor": penalty_factor})
 
+    async def console(self, child: str, name: str, used_today: int) -> dict[str, Any]:
+        return await self._req("POST", f"/children/{child}/console", {"name": name, "usedToday": used_today})
+
     async def decide_chore(self, chore_id: int, ok: bool) -> dict[str, Any]:
         return await self._req("POST", f"/chores/{chore_id}/{'approve' if ok else 'reject'}")

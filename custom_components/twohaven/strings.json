@@ -251,6 +251,28 @@
           "description": "Only needed if you have added more than one family."
         }
       }
+    },
+    "console": {
+      "name": "Game console: report play time",
+      "description": "Report how long the console has been used today. The console shares the time bank and schedule with the child's other devices. The response contains nintendo_max – total minutes allowed today (−1 = unlimited).",
+      "fields": {
+        "child": {
+          "name": "Child",
+          "description": "The child's name in TwoHaven"
+        },
+        "name": {
+          "name": "Console",
+          "description": "Name shown in TwoHaven"
+        },
+        "used_today": {
+          "name": "Used today",
+          "description": "Minutes today, e.g. from Nintendo's Used screen time sensor"
+        },
+        "config_entry_id": {
+          "name": "TwoHaven entry",
+          "description": "Only needed if you have several families"
+        }
+      }
     }
   }
 }

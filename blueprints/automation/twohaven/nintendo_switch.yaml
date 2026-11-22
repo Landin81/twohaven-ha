@@ -1,0 +1,68 @@
+blueprint:
+  name: TwoHaven – Nintendo Switch i tidsbanken
+  description: >-
+    Nintendo Switch delar skärmtid och schema med barnets telefon, platta och dator i TwoHaven.
+    Speltiden på Switchen räknas av från samma tidsbank, och när tiden är slut, utanför schemat
+    eller när du låser i TwoHaven stängs spelet av på Switchen – även offline-spel.
+
+    Kräver Home Assistants inbyggda integration "Nintendo Switch Parental Controls" och att
+    "Suspend software" är påslaget, samt TwoHaven-integrationen.
+  domain: automation
+  source_url: https://github.com/Landin81/twohaven-ha/blob/main/blueprints/automation/twohaven/nintendo_switch.yaml
+  input:
+    child:
+      name: Barn
+      description: Barnets namn som i TwoHaven, t.ex. sam.
+      selector: { text: {} }
+    console_name:
+      name: Namn i TwoHaven
+      default: Nintendo Switch
+      selector: { text: {} }
+    used_sensor:
+      name: Använd skärmtid (Switch)
+      description: Sensorn "Used screen time" från Nintendo-integrationen.
+      selector: { entity: { domain: sensor, integration: nintendo_parental_controls } }
+    max_today:
+      name: Max skärmtid idag (Switch)
+      description: Talet "Max screentime today" från Nintendo-integrationen.
+      selector: { entity: { domain: number, integration: nintendo_parental_controls } }
+    suspend_switch:
+      name: Suspend software (Switch)
+      description: Brytaren "Suspend software" – slås på så att spelet verkligen stängs av.
+      selector: { entity: { domain: switch, integration: nintendo_parental_controls } }
+
+mode: queued
+max: 3
+
+triggers:
+  - trigger: time_pattern
+    minutes: "/2"
+  - trigger: state
+    entity_id: !input used_sensor
+  - trigger: event
+    event_type: twohaven_chore_decided
+  - trigger: homeassistant
+    event: start
+
+actions:
+  - variables:
+      child: !input child
+      console_name: !input console_name
+      used_sensor: !input used_sensor
+      max_today: !input max_today
+  - condition: template
+    value_template: "{{ states(used_sensor) not in ['unknown', 'unavailable'] }}"
+  - action: twohaven.console
+    data:
+      child: "{{ child }}"
+      name: "{{ console_name }}"
+      used_today: "{{ states(used_sensor) | float(0) | round(0) }}"
+    response_variable: res
+  - action: switch.turn_on
+    target: { entity_id: !input suspend_switch }
+  - condition: template
+    value_template: "{{ (states(max_today) | float(-2)) != (res.nintendoMax | float) }}"
+  - action: number.set_value
+    target: { entity_id: !input max_today }
+    data:
+      value: "{{ res.nintendoMax }}"

@@ -77,3 +77,14 @@ ring:
     child: *child
     device: *device
     config_entry_id: *entry
+console:
+  fields:
+    child: *child
+    name:
+      default: Nintendo Switch
+      example: Nintendo Switch
+      selector: { text: {} }
+    used_today:
+      required: true
+      selector: { number: { min: 0, max: 1440, unit_of_measurement: min, mode: box } }
+    config_entry_id: *entry

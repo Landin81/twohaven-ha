@@ -251,6 +251,28 @@
           "description": "Behövs bara om du lagt till fler än en familj."
         }
       }
+    },
+    "console": {
+      "name": "Spelkonsol: rapportera speltid",
+      "description": "Rapportera hur länge konsolen använts idag. Konsolen delar tidsbank och schema med barnets andra enheter. Svaret innehåller nintendo_max – minuter konsolen får användas totalt idag (−1 = obegränsat).",
+      "fields": {
+        "child": {
+          "name": "Barn",
+          "description": "Barnets namn i TwoHaven"
+        },
+        "name": {
+          "name": "Konsol",
+          "description": "Namn som visas i TwoHaven"
+        },
+        "used_today": {
+          "name": "Använt idag",
+          "description": "Minuter idag, t.ex. från Nintendos sensor Used screen time"
+        },
+        "config_entry_id": {
+          "name": "TwoHaven-post",
+          "description": "Behövs bara om du har flera familjer"
+        }
+      }
     }
   }
 }

@@ -35,6 +35,9 @@ SCHEMAS = {
     "open": vol.Schema({**CHILD, vol.Required(ATTR_MINUTES): vol.All(vol.Coerce(int), vol.Range(min=0, max=240)), vol.Optional(ATTR_DEVICE): cv.string}),
     "internet": vol.Schema({**CHILD, vol.Required(ATTR_OFF): cv.boolean, vol.Optional(ATTR_DEVICE): cv.string}),
     "ring": vol.Schema({**CHILD, vol.Optional(ATTR_DEVICE): cv.string}),
+    # Spelkonsol (t.ex. Nintendo Switch): rapportera dagens speltid, få tillbaka hur länge den får användas idag
+    "console": vol.Schema({**CHILD, vol.Optional(ATTR_NAME, default="Nintendo Switch"): cv.string,
+                           vol.Required("used_today"): vol.All(vol.Coerce(float), vol.Range(min=0, max=1440))}),
 }
 
 
@@ -97,6 +100,8 @@ def _register_services(hass: HomeAssistant) -> None:
                 res = await api.open(child, d[ATTR_MINUTES], dev)
             elif name == "internet":
                 res = await api.internet(child, d[ATTR_OFF], dev)
+            elif name == "console":
+                res = await api.console(child, d[ATTR_NAME], int(d["used_today"]))
             else:
                 res = await api.ring(child, dev)
         except TwoHavenError as err:

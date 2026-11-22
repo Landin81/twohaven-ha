@@ -35,6 +35,20 @@ Barnet kryssar i "Bäddat sängen" på surfplattan i hallen och får 10 minuter 
 2. Importera blueprinten ovan och skapa en automation: välj växeln, skriv barnets namn, syssla, minuter och välj din mobil.
 3. Lägg växeln på instrumentpanelen. Den bockas ur automatiskt vid midnatt.
 
+## Nintendo Switch i tidsbanken 🎮
+
+Speltiden på barnets Nintendo Switch räknas av från samma tidsbank som telefonen, plattan och datorn, och följer samma schema. När tiden är slut, utanför schemat eller när du låser i TwoHaven stängs spelet av på Switchen – även offline-spel. Switchen syns hos barnet i TwoHaven-appen.
+
+Kräver Home Assistants inbyggda integration **Nintendo Switch Parental Controls** (2025.11 eller senare) och att Switchen är kopplad till Nintendos föräldrakontroll-app.
+
+[![Importera blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FLandin81%2Ftwohaven-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftwohaven%2Fnintendo_switch.yaml)
+
+## Xbox och PlayStation: stäng av internet 🌐
+
+Slår av internet för konsolen via din router när tiden är slut, utanför schemat eller när du låser. Fungerar med routrar som har en brytare per enhet i Home Assistant, t.ex. FRITZ!Box eller UniFi. Offline-spel fungerar fortfarande.
+
+[![Importera blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FLandin81%2Ftwohaven-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftwohaven%2Fconsole_internet.yaml)
+
 ## Åtgärder (för egna automationer)
 
 | Åtgärd | Exempel |
@@ -76,6 +90,12 @@ Each child becomes a device with sensors (time left, used, bonus, chores to chec
 **Chores with a check:** the child ticks "Made the bed" and gets the time right away; you get a notification with 👍 True / 👎 Cheating. Cheating takes the time back and deducts double. Import the blueprint above.
 
 **Actions:** `twohaven.give_bonus`, `twohaven.chore`, `twohaven.approve_chore`, `twohaven.reject_chore`, `twohaven.lock`, `twohaven.unlock`, `twohaven.open`, `twohaven.internet`, `twohaven.ring`. Events: `twohaven_chore_claimed`, `twohaven_chore_decided`.
+
+### Game consoles
+
+- **Nintendo Switch** (blueprint `nintendo_switch.yaml`): play time counts against the same time bank and schedule; the game is suspended when time is up – even offline games. Needs the built-in *Nintendo Switch Parental Controls* integration.
+- **Xbox / PlayStation** (blueprint `console_internet.yaml`): turns the console's internet off via your router (e.g. FRITZ!Box, UniFi) when time is up.
+- Action `twohaven.console`: report today's play time, returns `nintendoMax` (total minutes allowed today, −1 = unlimited) and `allowNow`.
 
 ## Licens / License
 

@@ -1,0 +1,55 @@
+blueprint:
+  name: TwoHaven – stäng av internet för en konsol (Xbox, PlayStation)
+  description: >-
+    Följer barnets skärmtid och schema i TwoHaven och slår av internet för en spelkonsol via din
+    router i Home Assistant när tiden är slut, utanför schemat eller när du låser. Konsolen syns
+    hos barnet i TwoHaven-appen. Fungerar med routrar som har en brytare per enhet, t.ex. FRITZ!Box
+    ("Internet access") eller UniFi ("Block client").
+
+    Obs: spel som inte kräver internet fungerar fortfarande – det här stoppar onlinespel, chatt
+    och streaming.
+  domain: automation
+  source_url: https://github.com/Landin81/twohaven-ha/blob/main/blueprints/automation/twohaven/console_internet.yaml
+  input:
+    child:
+      name: Barn
+      description: Barnets namn som i TwoHaven, t.ex. sam.
+      selector: { text: {} }
+    console_name:
+      name: Namn i TwoHaven
+      default: Xbox
+      selector: { text: {} }
+    internet_switch:
+      name: Konsolens internet
+      description: Routerns brytare för konsolen. På = internet tillåtet.
+      selector: { entity: { domain: switch } }
+    inverted:
+      name: Brytaren blockerar
+      description: Slå på om brytaren betyder "blockera" (t.ex. UniFi Block client) i stället för "tillåt".
+      default: false
+      selector: { boolean: {} }
+
+mode: queued
+max: 3
+
+triggers:
+  - trigger: time_pattern
+    minutes: "/2"
+  - trigger: event
+    event_type: twohaven_chore_decided
+  - trigger: homeassistant
+    event: start
+
+actions:
+  - variables:
+      inverted: !input inverted
+  - action: twohaven.console
+    data:
+      child: !input child
+      name: !input console_name
+      used_today: 0
+    response_variable: res
+  - variables:
+      want_on: "{{ (res.allowNow | bool) != (inverted | bool) }}"
+  - action: "switch.turn_{{ 'on' if want_on else 'off' }}"
+    target: { entity_id: !input internet_switch }
