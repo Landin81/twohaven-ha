@@ -49,6 +49,12 @@ Slår av internet för konsolen via din router när tiden är slut, utanför sch
 
 [![Importera blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FLandin81%2Ftwohaven-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftwohaven%2Fconsole_internet.yaml)
 
+## Smart-TV: LG, Samsung, Google TV m.fl. 📺
+
+Tiden TV:n är på räknas av från barnets tidsbank och följer samma schema. När tiden är slut, utanför schemat eller när du låser stängs TV:n av – och slås den på igen stängs den av inom en minut. Valfri varning på TV:n 5 minuter innan och en minut innan. Fungerar med TV-apparater som Home Assistant kan stänga av, t.ex. **LG webOS TV**, **Samsung Smart TV**, **Sony Bravia TV**, **Philips TV** och **Android TV Remote** (Google TV, Chromecast med Google TV).
+
+[![Importera blueprint](https://my.home-assistant.io/badges/blueprint_import.svg)](https://my.home-assistant.io/redirect/blueprint_import/?blueprint_url=https%3A%2F%2Fgithub.com%2FLandin81%2Ftwohaven-ha%2Fblob%2Fmain%2Fblueprints%2Fautomation%2Ftwohaven%2Fsmart_tv.yaml)
+
 ## Nätverkslådan
 
 Stänger av internet för Xbox och PlayStation när barnets skärmtid är slut – utan att routern behöver något särskilt stöd.
@@ -104,7 +110,8 @@ Each child becomes a device with sensors (time left, used, bonus, chores to chec
 
 - **Nintendo Switch** (blueprint `nintendo_switch.yaml`): play time counts against the same time bank and schedule; the game is suspended when time is up – even offline games. Needs the built-in *Nintendo Switch Parental Controls* integration.
 - **Xbox / PlayStation** (blueprint `console_internet.yaml`): turns the console's internet off via your router (e.g. FRITZ!Box, UniFi) when time is up.
-- Action `twohaven.console`: report today's play time, returns `nintendoMax` (total minutes allowed today, −1 = unlimited) and `allowNow`.
+- **Smart TV** (blueprint `smart_tv.yaml`): time the TV is on counts against the child's time bank; the TV is switched off when time is up (LG webOS, Samsung, Sony, Philips, Android TV / Google TV).
+- Action `twohaven.console`: report today's play time (`used_today`) or add minutes (`add_minutes`, `type: tv` for TVs), returns `nintendoMax` (total minutes allowed today, −1 = unlimited) and `allowNow`.
 
 ## Licens / License
 

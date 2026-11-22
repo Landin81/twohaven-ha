@@ -271,6 +271,14 @@
         "config_entry_id": {
           "name": "TwoHaven entry",
           "description": "Only needed if you have several families"
+        },
+        "add_minutes": {
+          "name": "Add minutes",
+          "description": "Add this many minutes to today's time instead of reporting the total (for TVs that don't count time themselves)"
+        },
+        "type": {
+          "name": "Type",
+          "description": "console or tv (shown as 📺 in TwoHaven)"
         }
       }
     }

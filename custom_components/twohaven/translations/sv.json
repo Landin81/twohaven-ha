@@ -271,6 +271,14 @@
         "config_entry_id": {
           "name": "TwoHaven-post",
           "description": "Behövs bara om du har flera familjer"
+        },
+        "add_minutes": {
+          "name": "Lägg till minuter",
+          "description": "Lägg till så många minuter på dagens tid i stället för att rapportera totalen (för TV-apparater som inte räknar tid själva)"
+        },
+        "type": {
+          "name": "Typ",
+          "description": "console eller tv (visas som 📺 i TwoHaven)"
         }
       }
     }

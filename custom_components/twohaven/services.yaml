@@ -85,6 +85,12 @@ console:
       example: Nintendo Switch
       selector: { text: {} }
     used_today:
-      required: true
+      required: false
       selector: { number: { min: 0, max: 1440, unit_of_measurement: min, mode: box } }
+    add_minutes:
+      required: false
+      selector: { number: { min: 0, max: 10, unit_of_measurement: min, mode: box } }
+    type:
+      default: console
+      selector: { select: { options: [console, tv] } }
     config_entry_id: *entry

@@ -1,0 +1,82 @@
+blueprint:
+  name: TwoHaven – smart-TV följer barnets skärmtid (LG, Samsung, Google TV m.fl.)
+  description: >-
+    Räknar tiden som TV:n är på som barnets skärmtid i TwoHaven – samma tidsbank och schema som barnets
+    telefon, platta och dator. När tiden är slut, utanför schemat eller när du låser stängs TV:n av.
+    Slår barnet på den igen stängs den av inom en minut. TV:n syns som 📺 hos barnet i TwoHaven-appen.
+
+    Fungerar med TV-apparater som går att stänga av från Home Assistant, t.ex. LG (LG webOS TV),
+    Samsung (Samsung Smart TV), Sony (Bravia TV), Philips (Philips TV) och Android TV / Google TV
+    (Android TV Remote). Valfritt: en varning på TV:n 5 minuter innan och en minut innan den stängs av
+    (t.ex. notify-tjänsten för LG webOS).
+  domain: automation
+  source_url: https://github.com/Landin81/twohaven-ha/blob/main/blueprints/automation/twohaven/smart_tv.yaml
+  input:
+    child:
+      name: Barn
+      description: Barnets namn som i TwoHaven, t.ex. sam.
+      selector: { text: {} }
+    tv:
+      name: TV
+      description: TV:ns mediaspelare i Home Assistant.
+      selector: { entity: { domain: media_player } }
+    tv_name:
+      name: Namn i TwoHaven
+      default: TV
+      selector: { text: {} }
+    notify_service:
+      name: Varning på TV:n (valfritt)
+      description: >-
+        Notify-tjänst som visar ett meddelande på TV:n, t.ex. notify.lg_webos_tv_vardagsrum.
+        Lämna tomt om TV:n inte kan visa meddelanden.
+      default: ""
+      selector: { text: {} }
+
+mode: single
+max_exceeded: silent
+
+triggers:
+  - trigger: time_pattern
+    minutes: "/1"
+  - trigger: state
+    entity_id: !input tv
+    from: ["off", "standby", "unavailable"]
+  - trigger: event
+    event_type: twohaven_chore_decided
+
+variables:
+  tv: !input tv
+  notify_service: !input notify_service
+  tv_on: "{{ states(tv) not in ['off', 'standby', 'unavailable', 'unknown'] }}"
+
+actions:
+  # Varje minut TV:n är på räknas som en minut skärmtid (bara vid minut-triggern, inte när den slås på)
+  - action: twohaven.console
+    data:
+      child: !input child
+      name: !input tv_name
+      type: tv
+      add_minutes: "{{ 1 if (tv_on and trigger.platform == 'time_pattern') else 0 }}"
+    response_variable: res
+  - variables:
+      left: "{{ (res.allowedToday - res.usedToday) if res.allowedToday is not none else 9999 }}"
+  - choose:
+      # 5 minuter kvar: varna
+      - conditions: "{{ tv_on and left == 5 and notify_service | length > 0 and trigger.platform == 'time_pattern' }}"
+        sequence:
+          - action: "{{ notify_service }}"
+            continue_on_error: true
+            data:
+              message: "⏳ 5 minuter skärmtid kvar"
+      # Tiden är slut, utanför schemat eller låst: stäng av
+      - conditions: "{{ tv_on and not (res.allowNow | bool) }}"
+        sequence:
+          - if: "{{ notify_service | length > 0 and trigger.platform == 'time_pattern' }}"
+            then:
+              - action: "{{ notify_service }}"
+                continue_on_error: true
+                data:
+                  message: "{{ '🔒 TV:n är låst' if res.reason == 'locked' else '🌙 Skärmtiden är slut för nu' }} – TV:n stängs av om en minut"
+              - delay: { seconds: 60 }
+          - action: media_player.turn_off
+            target: { entity_id: !input tv }
